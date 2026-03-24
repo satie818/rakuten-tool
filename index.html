@@ -72,7 +72,7 @@
 
     .link-box {
       margin-top: 12px;
-      font-size: 14px;
+      font-size: 16px;
       line-height: 1.7;
       word-break: break-all;
     }
@@ -80,6 +80,7 @@
     a {
       color: #0a58ca;
       text-decoration: none;
+      font-weight: 700;
     }
   </style>
 </head>
@@ -116,13 +117,13 @@
 この価格帯ほんとハズレ少ない
 
 一回見てみると分かる
-→ ${searchUrl}`;
+→ 楽天で見る`;
 
       document.getElementById("result").innerHTML = `
         <textarea id="postText">${post}</textarea>
         <button class="copy-btn" onclick="copyPost()">投稿文をコピー</button>
         <div class="link-box">
-          <a href="${searchUrl}" target="_blank" rel="noopener noreferrer">楽天で「${keyword}」を見る</a>
+          <a href="${searchUrl}" target="_blank" rel="noopener noreferrer">楽天で見る</a>
         </div>
       `;
     }
