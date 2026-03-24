@@ -125,4 +125,17 @@
         <textarea id="postText">${post}</textarea>
         <button class="copy-btn" onclick="copyPost()">投稿文をコピー</button>
         <div class="link-box">
-          <
+          <a href="${searchUrl}" target="_blank" rel="noopener noreferrer">楽天で「${keyword}」を見る</a>
+        </div>
+      `;
+    }
+
+    function copyPost() {
+      const text = document.getElementById("postText").value;
+      navigator.clipboard.writeText(text).then(() => {
+        alert("コピーしました");
+      });
+    }
+  </script>
+</body>
+</html>
