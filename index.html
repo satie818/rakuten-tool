@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>楽天バズ投稿ツール</title>
+
+<style>
+body {
+  font-family: sans-serif;
+  padding: 16px;
+  background: #f5f5f5;
+}
+input, button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  font-size: 16px;
+}
+.card {
+  background: #fff;
+  padding: 16px;
+  margin-top: 16px;
+  border-radius: 10px;
+}
+textarea {
+  width: 100%;
+  height: 180px;
+  margin-top: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<h2>楽天売れ筋 → 投稿生成</h2>
+
+<input id="keyword" placeholder="例：イヤホン">
+<button onclick="search()">検索する</button>
+
+<div id="result"></div>
+
+<script>
+const APP_ID = "0d192590-ac78-4904-9208-40c76b7e88f2";
+
+async function search() {
+  const keyword = document.getElementById("keyword").value;
+
+  if (!keyword) {
+    alert("キーワード入れてください");
+    return;
+  }
+
+  try {
+    const url = `https://cors-anywhere.herokuapp.com/https://app.rakuten.co.jp/services/api/IchibaItem/Search/20170706?applicationId=${APP_ID}&keyword=${encodeURIComponent(keyword)}&hits=1`;
+
+    const res = await fetch(url);
+    const data = await res.json();
+
+    if (!data.Items || data.Items.length === 0) {
+      document.getElementById("result").innerHTML = "商品が見つかりません";
+      return;
+    }
+
+    const item = data.Items[0].Item;
+
+    const name = item.itemName;
+    const price = item.itemPrice;
+    const review = item.reviewAverage || "なし";
+    const link = item.itemUrl;
+
+    const point = Math.floor(price * 0.05);
+
+    const post = `これ今めちゃ売れてる
+
+楽天ランキング上位のこれ
+普通にコスパいい
+
+・価格：${price}円
+・ポイント：約${point}円分
+・レビュー：${review}
+
+→${link}`;
+
+    document.getElementById("result").innerHTML = `
+      <div class="card">
+        <h3>${name}</h3>
+        <p>価格：${price}円</p>
+        <p>レビュー：${review}</p>
+        <a href="${link}" target="_blank">商品を見る</a>
+
+        <textarea>${post}</textarea>
+      </div>
+    `;
+
+  } catch (e) {
+    document.getElementById("result").innerHTML = "エラー発生（CORS対策必要）";
+    console.error(e);
+  }
+}
+</script>
+
+</body>
+</html>
