@@ -1,103 +1,117 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>楽天バズ投稿ツール</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>楽天売れ筋 → 投稿生成</title>
 
-<style>
-body {
-  font-family: sans-serif;
-  padding: 16px;
-  background: #f5f5f5;
-}
-input, button {
-  width: 100%;
-  padding: 12px;
-  margin-top: 10px;
-  font-size: 16px;
-}
-.card {
-  background: #fff;
-  padding: 16px;
-  margin-top: 16px;
-  border-radius: 10px;
-}
-textarea {
-  width: 100%;
-  height: 180px;
-  margin-top: 10px;
-}
-</style>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f5f5f5;
+      margin: 0;
+      padding: 24px 16px 40px;
+    }
+
+    .wrap {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-size: 26px;
+      margin-bottom: 20px;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      font-size: 18px;
+      border-radius: 10px;
+      border: 1px solid #ddd;
+      margin-bottom: 10px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      font-size: 20px;
+      border-radius: 10px;
+      border: none;
+      background: black;
+      color: white;
+      margin-bottom: 20px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 220px;
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 10px;
+      border: 1px solid #ddd;
+    }
+
+    a {
+      display: block;
+      margin-top: 10px;
+      color: blue;
+    }
+  </style>
 </head>
 
 <body>
+  <div class="wrap">
+    <h1>楽天売れ筋 → 投稿生成</h1>
 
-<h2>楽天売れ筋 → 投稿生成</h2>
+    <input id="keyword" placeholder="例：イヤホン">
+    <button onclick="generate()">投稿を作る</button>
 
-<input id="keyword" placeholder="例：イヤホン">
-<button onclick="search()">検索する</button>
+    <div id="result"></div>
+  </div>
 
-<div id="result"></div>
+  <script>
+    function generate() {
+      const keyword = document.getElementById("keyword").value;
 
-<script>
-const APP_ID = "0d192590-ac78-4904-9208-40c76b7e88f2";
+      if (!keyword) {
+        alert("キーワード入れてください");
+        return;
+      }
 
-async function search() {
-  const keyword = document.getElementById("keyword").value;
+      // 🔥 あなたのアフィリエイトID
+      const affiliateId = "52355b8c.b0edee2c.52355b8d.0bec1f43";
 
-  if (!keyword) {
-    alert("キーワード入れてください");
-    return;
-  }
+      const searchUrl =
+        "https://hb.afl.rakuten.co.jp/hgc/" +
+        affiliateId +
+        "/?pc=" +
+        encodeURIComponent("https://search.rakuten.co.jp/search/mall/" + keyword + "/");
 
-  try {
-    const url = `https://cors-anywhere.herokuapp.com/https://app.rakuten.co.jp/services/api/IchibaItem/Search/20170706?applicationId=${APP_ID}&keyword=${encodeURIComponent(keyword)}&hits=1`;
-
-    const res = await fetch(url);
-    const data = await res.json();
-
-    if (!data.Items || data.Items.length === 0) {
-      document.getElementById("result").innerHTML = "商品が見つかりません";
-      return;
-    }
-
-    const item = data.Items[0].Item;
-
-    const name = item.itemName;
-    const price = item.itemPrice;
-    const review = item.reviewAverage || "なし";
-    const link = item.itemUrl;
-
-    const point = Math.floor(price * 0.05);
-
-    const post = `これ今めちゃ売れてる
+      const post = `これ今めちゃ売れてる
 
 楽天ランキング上位のこれ
 普通にコスパいい
 
-・価格：${price}円
-・ポイント：約${point}円分
-・レビュー：${review}
+・価格：商品ページ参照
+・ポイント：商品ページ参照
+・レビュー：商品ページ参照
 
-→${link}`;
+→ ${searchUrl}`;
 
-    document.getElementById("result").innerHTML = `
-      <div class="card">
-        <h3>${name}</h3>
-        <p>価格：${price}円</p>
-        <p>レビュー：${review}</p>
-        <a href="${link}" target="_blank">商品を見る</a>
+      document.getElementById("result").innerHTML = `
+        <textarea id="post">${post}</textarea>
+        <button onclick="copy()">コピー</button>
+        <a href="${searchUrl}" target="_blank">楽天で見る</a>
+      `;
+    }
 
-        <textarea>${post}</textarea>
-      </div>
-    `;
-
-  } catch (e) {
-    document.getElementById("result").innerHTML = "エラー発生（CORS対策必要）";
-    console.error(e);
-  }
-}
-</script>
-
+    function copy() {
+      const text = document.getElementById("post");
+      text.select();
+      document.execCommand("copy");
+      alert("コピーしました");
+    }
+  </script>
 </body>
 </html>
